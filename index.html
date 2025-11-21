@@ -7,29 +7,15 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Pretendard 폰트 CDN -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- Pretendard 폰트 CDN (동적 서브셋) -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" />
 
-    <!-- ✨ Tailwind 설정: extend 밖으로 빼서 기본값을 아예 'Pretendard'로 교체 -->
-    <script>
-      tailwind.config = {
-        theme: {
-          // extend 안에 넣으면 기존 거랑 섞이는데, 
-          // 이렇게 밖으로 빼면 'sans'는 무조건 프리텐다드가 됩니다.
-          fontFamily: {
-            sans: ['Pretendard', 'sans-serif'],
-          },
-          extend: {
-            // 다른 설정들...
-          },
-        },
-      }
-    </script>
-
-    <!-- ✨ 최후의 수단: CSS로 강제 적용 (이래도 안 바뀌면 모니터 탓임) -->
+    <!-- ✨ 폰트 강제 적용 (Nuclear Option) -->
+    <!-- Tailwind 설정이고 나발이고 CSS 우선순위 깡패(!important)로 덮어버립니다 -->
     <style>
-      * {
-        font-family: 'Pretendard', sans-serif !important;
+      /* 모든 요소에 강제로 Pretendard 적용 */
+      body, html, *, *::before, *::after {
+        font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif !important;
       }
     </style>
   </head>
