@@ -1,0 +1,351 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Upload, RefreshCw, Check, Coins, ChevronRight, Search, FileText, Menu, Zap } from 'lucide-react';
+
+// --- Mock Data & Assets ---
+// 실제로는 3D 모델이나 생성된 이미지가 오겠지만, 여기선 3D 느낌 나는 귀여운 이미지들로 대체함
+const PET_VARIANTS = [
+  { id: 1, name: "말랑 햄찌", color: "from-orange-300 to-yellow-200", image: "https://cdn-icons-png.flaticon.com/512/4081/4081551.png" }, // Hamster-ish
+  { id: 2, name: "동글 댕댕", color: "from-blue-300 to-cyan-200", image: "https://cdn-icons-png.flaticon.com/512/3753/3753022.png" }, // Dog-ish
+  { id: 3, name: "포근 냥이", color: "from-pink-300 to-rose-200", image: "https://cdn-icons-png.flaticon.com/512/616/616430.png" }, // Cat-ish
+  { id: 4, name: "초록 공룡", color: "from-green-300 to-emerald-200", image: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" }, // Dino-ish
+];
+
+export default function App() {
+  // --- State ---
+  const [currentTab, setCurrentTab] = useState('benefits'); // benefits, home, etc.
+  const [points, setPoints] = useState(9658);
+  const [appState, setAppState] = useState('main_rock'); // 'main_rock' (legacy), 'upload', 'processing', 'result', 'main_pet'
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [generatedPet, setGeneratedPet] = useState(null);
+  const [tapAnimations, setTapAnimations] = useState([]);
+
+  // --- Actions ---
+  
+  // 1. 사진 업로드 시뮬레이션
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(URL.createObjectURL(file));
+      // 바로 AI 처리 단계로 넘어가는 척
+      setTimeout(() => setAppState('processing'), 500);
+    }
+  };
+
+  // 2. AI 처리 시뮬레이션
+  useEffect(() => {
+    if (appState === 'processing') {
+      // 2.5초 뒤에 결과 나옴
+      const timer = setTimeout(() => {
+        rerollPet();
+        setAppState('result');
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [appState]);
+
+  // 3. 펫 랜덤 생성 (가챠)
+  const rerollPet = () => {
+    const randomPet = PET_VARIANTS[Math.floor(Math.random() * PET_VARIANTS.length)];
+    setGeneratedPet(randomPet);
+  };
+
+  // 4. 펫 확정
+  const confirmPet = () => {
+    setAppState('main_pet');
+  };
+
+  // 5. 펫 터치 (리워드)
+  const handlePetTap = (e) => {
+    // 포인트 증가
+    setPoints(p => p + 1 + Math.floor(Math.random() * 3)); // 1~3포인트 랜덤
+    
+    // 터치 이펙트 좌표 계산
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const newAnim = {
+      id: Date.now(),
+      x,
+      y,
+      val: `+${1 + Math.floor(Math.random() * 3)}P`
+    };
+    
+    setTapAnimations(prev => [...prev, newAnim]);
+
+    // 애니메이션 cleanup
+    setTimeout(() => {
+      setTapAnimations(prev => prev.filter(a => a.id !== newAnim.id));
+    }, 1000);
+  };
+
+  // --- Render Components ---
+
+  // 공통 헤더
+  const Header = () => (
+    <header className="flex justify-between items-center px-4 py-3 bg-white sticky top-0 z-10">
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-white text-xs font-bold">P</div>
+        <span className="font-bold text-xl text-gray-800">{points.toLocaleString()}P</span>
+      </div>
+      <div className="flex gap-2">
+        <button className="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600">내역</button>
+        <button className="px-3 py-1 border border-gray-200 rounded text-sm text-gray-600">포인트 전환</button>
+      </div>
+    </header>
+  );
+
+  // 공통 바텀 네비게이션
+  const BottomNav = () => (
+    <nav className="flex justify-between items-center px-6 py-3 bg-white border-t border-gray-100 sticky bottom-0 pb-6 text-xs text-gray-400">
+      <div className="flex flex-col items-center gap-1" onClick={() => setCurrentTab('search')}>
+        <Search size={24} />
+        <span>검색</span>
+      </div>
+      <div className="flex flex-col items-center gap-1" onClick={() => setCurrentTab('issue')}>
+        <FileText size={24} />
+        <span>이슈</span>
+      </div>
+      <div className={`flex flex-col items-center gap-1 ${currentTab === 'benefits' ? 'text-gray-900 font-bold' : ''}`} onClick={() => setCurrentTab('benefits')}>
+        <div className="relative">
+          <Zap size={24} fill={currentTab === 'benefits' ? "black" : "none"} />
+          {currentTab === 'benefits' && <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>}
+        </div>
+        <span>혜택</span>
+      </div>
+      <div className="flex flex-col items-center gap-1" onClick={() => setCurrentTab('more')}>
+        <Menu size={24} />
+        <span>더보기</span>
+      </div>
+    </nav>
+  );
+
+  // 화면 1: 파일 업로드
+  const UploadScreen = () => (
+    <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50">
+      <div className="w-full max-w-xs bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <h2 className="text-xl font-bold mb-2 text-gray-800">나만의 펫 만들기</h2>
+        <p className="text-sm text-gray-500 mb-6">사진을 올리면 AI가 귀여운 3D 펫으로 변신시켜 드려요!</p>
+        
+        <label className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-colors group">
+          {selectedFile ? (
+            <img src={selectedFile} alt="Preview" className="w-full h-full object-cover rounded-xl opacity-50" />
+          ) : (
+            <>
+              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 mb-3 group-hover:scale-110 transition-transform">
+                <Upload size={28} />
+              </div>
+              <span className="text-blue-500 font-bold">사진 업로드 하기</span>
+              <span className="text-xs text-gray-400 mt-1">갤러리에서 선택</span>
+            </>
+          )}
+          <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
+        </label>
+      </div>
+    </div>
+  );
+
+  // 화면 2: 로딩 중
+  const ProcessingScreen = () => (
+    <div className="flex-1 flex flex-col items-center justify-center bg-white p-6">
+      <div className="relative w-32 h-32 mb-6">
+        {/* Spinning Ring */}
+        <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+        <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+        {selectedFile && (
+           <img src={selectedFile} className="absolute inset-4 w-24 h-24 object-cover rounded-full opacity-80 animate-pulse" alt="orig" />
+        )}
+      </div>
+      <h3 className="text-xl font-bold text-gray-800 mb-2 animate-bounce">AI가 펫을 빚는 중...</h3>
+      <p className="text-gray-500 text-sm">조금만 기다려주세요! (약 3초)</p>
+    </div>
+  );
+
+  // 화면 3: 결과 확인 & 확정
+  const ResultScreen = () => (
+    <div className="flex-1 flex flex-col items-center justify-between bg-gray-50 p-6 pb-10">
+      <div className="flex-1 flex flex-col items-center justify-center w-full">
+        <h2 className="text-2xl font-bold text-gray-800 mb-8">짠! 펫이 탄생했어요 🎉</h2>
+        
+        <div className={`relative w-64 h-64 bg-gradient-to-br ${generatedPet.color} rounded-3xl shadow-xl flex items-center justify-center p-4 mb-4 animate-[bounce_3s_infinite]`}>
+          <div className="absolute inset-0 bg-white opacity-20 rounded-3xl blur-xl"></div>
+          <img src={generatedPet.image} alt="Pet" className="w-48 h-48 object-contain z-10 drop-shadow-lg" />
+          
+          {/* Name Tag */}
+          <div className="absolute -bottom-4 bg-white px-4 py-2 rounded-full shadow-md text-gray-800 font-bold text-sm border border-gray-100">
+            Lv.1 {generatedPet.name}
+          </div>
+        </div>
+        <p className="text-gray-500 mt-4 text-sm">이 펫으로 포인트를 모으시겠어요?</p>
+      </div>
+
+      <div className="w-full space-y-3">
+        <button 
+          onClick={confirmPet}
+          className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 active:scale-95"
+        >
+          <Check size={20} />
+          이걸로 확정하기
+        </button>
+        <button 
+          onClick={rerollPet}
+          className="w-full py-4 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all flex items-center justify-center gap-2 active:scale-95"
+        >
+          <RefreshCw size={20} />
+          광고 보고 다시 뽑기
+        </button>
+      </div>
+    </div>
+  );
+
+  // 화면 4 (메인): 펫 터치
+  const MainPetScreen = () => (
+    <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
+      {/* Gradient Background Area */}
+      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-8 rounded-b-[3rem] shadow-sm relative overflow-hidden">
+        
+        {/* Title */}
+        <div className="text-center pt-6 pb-4 z-10 relative">
+          <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+            톡톡! 포인트가 쏟아지는<br />
+            <span className="text-blue-500">나만의 3D 펫</span>
+          </h1>
+          <div className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full inline-block mt-3 animate-pulse">
+            펫을 계속 쓰다듬어 보세요!
+          </div>
+        </div>
+
+        {/* Pet Interaction Area */}
+        <div className="flex justify-center items-center py-8 relative">
+          {/* Glow Effect behind */}
+          <div className={`absolute w-64 h-64 bg-gradient-to-tr ${generatedPet.color} rounded-full blur-3xl opacity-40`}></div>
+          
+          {/* The Pet */}
+          <div 
+            className="relative w-60 h-60 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-10 group"
+            onClick={handlePetTap}
+          >
+            <img 
+              src={generatedPet.image} 
+              alt="My Pet" 
+              className="w-full h-full object-contain drop-shadow-2xl filter group-hover:brightness-110 transition-all" 
+              style={{ transform: 'translateZ(0)' }} // Force GPU
+            />
+            
+            {/* Tap Effects */}
+            {tapAnimations.map(anim => (
+              <div 
+                key={anim.id}
+                className="absolute text-yellow-500 font-bold text-2xl animate-[floatUp_0.8s_ease-out_forwards] pointer-events-none z-20 whitespace-nowrap"
+                style={{ left: anim.x, top: anim.y }}
+              >
+                {anim.val}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Other Missions List (Scrollable) */}
+      <div className="px-4 py-6 space-y-4">
+        <h3 className="font-bold text-gray-600 text-sm px-1">함께하는 특별 미션</h3>
+        
+        {/* Friend Invite Card */}
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
+          <div className="flex gap-3 items-center">
+            <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-xl">💌</div>
+            <div>
+              <div className="font-bold text-gray-800">더 커진 친구 초대</div>
+              <div className="text-xs text-gray-400">가입 보상에 활동 보너스까지!</div>
+            </div>
+          </div>
+          <div className="bg-blue-50 text-blue-500 px-3 py-1 rounded-lg text-sm font-bold">500P</div>
+        </div>
+
+        <h3 className="font-bold text-gray-600 text-sm px-1 mt-6">매일 참여 미션</h3>
+         {[
+            { icon: '🖐️', title: '가위바위보 챌린지', sub: '이길수록 커지는 보상', reward: '최대 100P' },
+            { icon: '🥠', title: '행운의 포춘쿠키', sub: '하루 3번 열기 가능', reward: '최대 150P' },
+            { icon: '🌵', title: '선인장 뛰어넘기', sub: '10번만 넘으면 보상', reward: '최대 10P' },
+          ].map((item, i) => (
+            <div key={i} className="bg-white p-4 rounded-2xl border border-gray-50 flex justify-between items-center">
+              <div className="flex gap-4 items-center">
+                <div className="text-2xl">{item.icon}</div>
+                <div>
+                  <div className="font-bold text-gray-800 text-sm">{item.title}</div>
+                  <div className="text-xs text-gray-400">{item.sub}</div>
+                </div>
+              </div>
+              <div className="bg-blue-50 text-blue-500 px-3 py-1.5 rounded-lg text-xs font-bold">{item.reward}</div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+
+  // Entry Point to Start the New Feature Demo
+  const LegacyRockScreen = () => (
+    <div className="flex-1 flex flex-col bg-gray-50">
+      {/* This simulates the OLD screen, with a prompt to try the NEW feature */}
+      <div className="bg-blue-50 p-6 pb-10 text-center relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-100 to-white opacity-50"></div>
+         
+         <h1 className="text-2xl font-bold text-gray-900 relative z-10 mb-4">
+            톡톡! 포인트가 나오는<br /><span className="text-blue-500">신비한 바위</span>
+         </h1>
+
+         {/* The Old Rock */}
+         <div className="w-40 h-40 bg-gray-300 rounded-[3rem] mx-auto shadow-lg flex items-center justify-center text-4xl grayscale opacity-50 relative z-10">
+            🪨
+         </div>
+         
+         {/* Promotion Banner for New Feature */}
+         <div className="mt-8 relative z-20">
+            <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-blue-400 animate-pulse">
+              <div className="inline-block bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded mb-2">NEW</div>
+              <h3 className="font-bold text-lg mb-1">이제 돌멩이는 그만! 🛑</h3>
+              <p className="text-sm text-gray-600 mb-4">내가 직접 만든 <span className="text-blue-500 font-bold">3D 펫</span>을 키워보세요.</p>
+              <button 
+                onClick={() => setAppState('upload')}
+                className="w-full py-3 bg-blue-500 text-white rounded-xl font-bold shadow-md hover:bg-blue-600 transition-colors"
+              >
+                내 펫 만들러 가기 👉
+              </button>
+            </div>
+         </div>
+      </div>
+
+       {/* Fake list below */}
+       <div className="p-4 space-y-3 opacity-50 pointer-events-none">
+          <div className="h-20 bg-white rounded-xl"></div>
+          <div className="h-20 bg-white rounded-xl"></div>
+       </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center font-sans">
+      <style>{`
+        @keyframes floatUp {
+          0% { transform: translateY(0) scale(1); opacity: 1; }
+          100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+      `}</style>
+
+      {/* Mobile Frame */}
+      <div className="w-full max-w-[375px] h-[812px] bg-white shadow-2xl overflow-hidden flex flex-col relative">
+        <Header />
+        
+        {/* Content Switcher */}
+        {appState === 'main_rock' && <LegacyRockScreen />}
+        {appState === 'upload' && <UploadScreen />}
+        {appState === 'processing' && <ProcessingScreen />}
+        {appState === 'result' && <ResultScreen />}
+        {appState === 'main_pet' && <MainPetScreen />}
+
+        <BottomNav />
+      </div>
+    </div>
+  );
+}
