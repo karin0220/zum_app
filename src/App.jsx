@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Check, Coins, ChevronRight, Search, FileText, Menu, Zap } from 'lucide-react';
 
 // --- Mock Data & Assets ---
+// FIX: 제공해주신 6개 펫 이미지로 교체 완료 (모든 펫이 /pet.jpg 파일을 가리킵니다.)
 const PET_VARIANTS = [
-  { id: 1, name: "말랑 햄찌", color: "from-orange-300 to-yellow-200", image: "https://cdn-icons-png.flaticon.com/512/4081/4081551.png" }, // Hamster-ish
-  { id: 2, name: "동글 댕댕", color: "from-blue-300 to-cyan-200", image: "https://cdn-icons-png.flaticon.com/512/3753/3753022.png" }, // Dog-ish
-  { id: 3, name: "포근 냥이", color: "from-pink-300 to-rose-200", image: "https://cdn-icons-png.flaticon.com/512/616/616430.png" }, // Cat-ish
-  { id: 4, name: "초록 공룡", color: "from-green-300 to-emerald-200", image: "https://cdn-icons-png.flaticon.com/512/3069/3069172.png" }, // Dino-ish
+  { id: 1, name: "주황냥", color: "from-orange-300 to-yellow-200", image: "/pet.jpg" }, // Orange Cat
+  { id: 2, name: "치즈냥", color: "from-amber-200 to-white", image: "/pet.jpg" }, // Cream Cat
+  { id: 3, name: "샴냥이", color: "from-gray-200 to-stone-300", image: "/pet.jpg" }, // Siamese Cat
+  { id: 4, name: "골든댕", color: "from-yellow-300 to-amber-200", image: "/pet.jpg" }, // Yellow Dog
+  { id: 5, name: "푸들", color: "from-amber-600 to-amber-800", image: "/pet.jpg" }, // Brown Poodle
+  { id: 6, name: "시바견", color: "from-orange-200 to-yellow-100", image: "/pet.jpg" }, // Shiba Inu
 ];
 
 export default function App() {
@@ -148,6 +151,7 @@ export default function App() {
         <h2 className="text-2xl font-bold text-gray-800 mb-8">짠! 펫이 탄생했어요 🎉</h2>
         <div className={`relative w-64 h-64 bg-gradient-to-br ${generatedPet.color} rounded-3xl shadow-xl flex items-center justify-center p-4 mb-4 animate-[bounce_3s_infinite]`}>
           <div className="absolute inset-0 bg-white opacity-20 rounded-3xl blur-xl"></div>
+          {/* NOTE: 모든 펫이 동일한 /pet.jpg 파일을 사용하므로, 6개 펫 이미지가 다 함께 보일 수 있습니다. */}
           <img src={generatedPet.image} alt="Pet" className="w-48 h-48 object-contain z-10 drop-shadow-lg" />
           <div className="absolute -bottom-4 bg-white px-4 py-2 rounded-full shadow-md text-gray-800 font-bold text-sm border border-gray-100">
             Lv.1 {generatedPet.name}
@@ -174,10 +178,8 @@ export default function App() {
     </div>
   );
 
-  // 메인 화면 (펫 터치) - Z-Index 및 여백 수정 완료
   const MainPetScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
-      {/* 1. Pet Header Section */}
       <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-24 rounded-b-[3rem] shadow-sm relative z-20">
         
         <div className="text-center pt-8 pb-4 z-10 relative">
@@ -190,7 +192,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Pet Interaction Area */}
         <div className="flex justify-center items-center pt-4 relative">
           <div className={`absolute w-64 h-64 bg-gradient-to-tr ${generatedPet.color} rounded-full blur-3xl opacity-40 transform translate-y-4`}></div>
           
@@ -198,6 +199,7 @@ export default function App() {
             className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-30 group"
             onClick={handlePetTap}
           >
+            {/* NOTE: 모든 펫이 동일한 /pet.jpg 파일을 사용하므로, 6개 펫 이미지가 다 함께 보일 수 있습니다. */}
             <img 
               src={generatedPet.image} 
               alt="My Pet" 
@@ -218,7 +220,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* 2. Mission List Section */}
       <div className="px-4 py-6 space-y-4 relative z-10 -mt-10">
         <h3 className="font-bold text-gray-600 text-sm px-1 mb-2">함께하는 특별 미션</h3>
         
@@ -288,7 +289,6 @@ export default function App() {
   return (
     <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center font-sans">
       <style>{`
-        /* Pretendard 폰트 적용을 위해 Tailwind 기본 sans 폰트 스택을 덮어씌움 */
         @layer base {
           :root {
             font-family: 'Pretendard', sans-serif;
