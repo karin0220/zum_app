@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Check, Coins, ChevronRight, Search, FileText, Menu, Zap } from 'lucide-react';
 
 // --- Mock Data & Assets ---
-// 실제로는 3D 모델이나 생성된 이미지가 오겠지만, 여기선 3D 느낌 나는 귀여운 이미지들로 대체함
 const PET_VARIANTS = [
   { id: 1, name: "말랑 햄찌", color: "from-orange-300 to-yellow-200", image: "https://cdn-icons-png.flaticon.com/512/4081/4081551.png" }, // Hamster-ish
   { id: 2, name: "동글 댕댕", color: "from-blue-300 to-cyan-200", image: "https://cdn-icons-png.flaticon.com/512/3753/3753022.png" }, // Dog-ish
@@ -12,29 +11,24 @@ const PET_VARIANTS = [
 
 export default function App() {
   // --- State ---
-  const [currentTab, setCurrentTab] = useState('benefits'); // benefits, home, etc.
+  const [currentTab, setCurrentTab] = useState('benefits');
   const [points, setPoints] = useState(9658);
-  const [appState, setAppState] = useState('main_rock'); // 'main_rock' (legacy), 'upload', 'processing', 'result', 'main_pet'
+  const [appState, setAppState] = useState('main_rock');
   const [selectedFile, setSelectedFile] = useState(null);
   const [generatedPet, setGeneratedPet] = useState(null);
   const [tapAnimations, setTapAnimations] = useState([]);
 
   // --- Actions ---
-  
-  // 1. 사진 업로드 시뮬레이션
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(URL.createObjectURL(file));
-      // 바로 AI 처리 단계로 넘어가는 척
       setTimeout(() => setAppState('processing'), 500);
     }
   };
 
-  // 2. AI 처리 시뮬레이션
   useEffect(() => {
     if (appState === 'processing') {
-      // 2.5초 뒤에 결과 나옴
       const timer = setTimeout(() => {
         rerollPet();
         setAppState('result');
@@ -43,23 +37,18 @@ export default function App() {
     }
   }, [appState]);
 
-  // 3. 펫 랜덤 생성 (가챠)
   const rerollPet = () => {
     const randomPet = PET_VARIANTS[Math.floor(Math.random() * PET_VARIANTS.length)];
     setGeneratedPet(randomPet);
   };
 
-  // 4. 펫 확정
   const confirmPet = () => {
     setAppState('main_pet');
   };
 
-  // 5. 펫 터치 (리워드)
   const handlePetTap = (e) => {
-    // 포인트 증가
-    setPoints(p => p + 1 + Math.floor(Math.random() * 3)); // 1~3포인트 랜덤
+    setPoints(p => p + 1 + Math.floor(Math.random() * 3));
     
-    // 터치 이펙트 좌표 계산
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -72,8 +61,6 @@ export default function App() {
     };
     
     setTapAnimations(prev => [...prev, newAnim]);
-
-    // 애니메이션 cleanup
     setTimeout(() => {
       setTapAnimations(prev => prev.filter(a => a.id !== newAnim.id));
     }, 1000);
@@ -81,7 +68,6 @@ export default function App() {
 
   // --- Render Components ---
 
-  // 공통 헤더
   const Header = () => (
     <header className="flex justify-between items-center px-4 py-3 bg-white sticky top-0 z-50 shadow-sm">
       <div className="flex items-center gap-2">
@@ -95,7 +81,6 @@ export default function App() {
     </header>
   );
 
-  // 공통 바텀 네비게이션
   const BottomNav = () => (
     <nav className="flex justify-between items-center px-6 py-3 bg-white border-t border-gray-100 sticky bottom-0 pb-6 text-xs text-gray-400 z-50">
       <div className="flex flex-col items-center gap-1" onClick={() => setCurrentTab('search')}>
@@ -120,13 +105,11 @@ export default function App() {
     </nav>
   );
 
-  // 화면 1: 파일 업로드
   const UploadScreen = () => (
     <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gray-50">
       <div className="w-full max-w-xs bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
         <h2 className="text-xl font-bold mb-2 text-gray-800">나만의 펫 만들기</h2>
         <p className="text-sm text-gray-500 mb-6">사진을 올리면 AI가 귀여운 3D 펫으로 변신시켜 드려요!</p>
-        
         <label className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-colors group">
           {selectedFile ? (
             <img src={selectedFile} alt="Preview" className="w-full h-full object-cover rounded-xl opacity-50" />
@@ -145,11 +128,9 @@ export default function App() {
     </div>
   );
 
-  // 화면 2: 로딩 중
   const ProcessingScreen = () => (
     <div className="flex-1 flex flex-col items-center justify-center bg-white p-6">
       <div className="relative w-32 h-32 mb-6">
-        {/* Spinning Ring */}
         <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
         <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
         {selectedFile && (
@@ -161,24 +142,19 @@ export default function App() {
     </div>
   );
 
-  // 화면 3: 결과 확인 & 확정
   const ResultScreen = () => (
     <div className="flex-1 flex flex-col items-center justify-between bg-gray-50 p-6 pb-10">
       <div className="flex-1 flex flex-col items-center justify-center w-full">
         <h2 className="text-2xl font-bold text-gray-800 mb-8">짠! 펫이 탄생했어요 🎉</h2>
-        
         <div className={`relative w-64 h-64 bg-gradient-to-br ${generatedPet.color} rounded-3xl shadow-xl flex items-center justify-center p-4 mb-4 animate-[bounce_3s_infinite]`}>
           <div className="absolute inset-0 bg-white opacity-20 rounded-3xl blur-xl"></div>
           <img src={generatedPet.image} alt="Pet" className="w-48 h-48 object-contain z-10 drop-shadow-lg" />
-          
-          {/* Name Tag */}
           <div className="absolute -bottom-4 bg-white px-4 py-2 rounded-full shadow-md text-gray-800 font-bold text-sm border border-gray-100">
             Lv.1 {generatedPet.name}
           </div>
         </div>
         <p className="text-gray-500 mt-4 text-sm">이 펫으로 포인트를 모으시겠어요?</p>
       </div>
-
       <div className="w-full space-y-3">
         <button 
           onClick={confirmPet}
@@ -198,14 +174,13 @@ export default function App() {
     </div>
   );
 
-  // 화면 4 (메인): 펫 터치
+  // 메인 화면 (펫 터치) - Z-Index 및 여백 수정 완료
   const MainPetScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
-      {/* Gradient Background Area */}
-      {/* FIX: pb-8 -> pb-20으로 늘리고, overflow-hidden 제거해서 펫이 짤리지 않게 함 */}
-      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-20 rounded-b-[3rem] shadow-sm relative z-0">
+      {/* 1. Pet Header Section */}
+      {/* z-20을 줘서 리스트(z-10)보다 무조건 위에 오게 함. pb-24로 여백 더 늘림 */}
+      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-24 rounded-b-[3rem] shadow-sm relative z-20">
         
-        {/* Title */}
         <div className="text-center pt-8 pb-4 z-10 relative">
           <h1 className="text-2xl font-bold text-gray-900 leading-tight">
             톡톡! 포인트가 쏟아지는<br />
@@ -217,27 +192,24 @@ export default function App() {
         </div>
 
         {/* Pet Interaction Area */}
-        <div className="flex justify-center items-center pt-4 pb-8 relative">
-          {/* Glow Effect behind */}
+        <div className="flex justify-center items-center pt-4 relative">
           <div className={`absolute w-64 h-64 bg-gradient-to-tr ${generatedPet.color} rounded-full blur-3xl opacity-40 transform translate-y-4`}></div>
           
-          {/* The Pet */}
           <div 
-            className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-20 group"
+            className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-30 group"
             onClick={handlePetTap}
           >
             <img 
               src={generatedPet.image} 
               alt="My Pet" 
               className="w-full h-full object-contain drop-shadow-2xl filter group-hover:brightness-110 transition-all transform hover:-translate-y-2" 
-              style={{ transform: 'translateZ(0)' }} // Force GPU
+              style={{ transform: 'translateZ(0)' }}
             />
             
-            {/* Tap Effects */}
             {tapAnimations.map(anim => (
               <div 
                 key={anim.id}
-                className="absolute text-yellow-500 font-bold text-2xl animate-[floatUp_0.8s_ease-out_forwards] pointer-events-none z-30 whitespace-nowrap"
+                className="absolute text-yellow-500 font-bold text-2xl animate-[floatUp_0.8s_ease-out_forwards] pointer-events-none z-40 whitespace-nowrap"
                 style={{ left: anim.x, top: anim.y }}
               >
                 {anim.val}
@@ -247,12 +219,12 @@ export default function App() {
         </div>
       </div>
 
-      {/* Other Missions List (Scrollable) */}
-      {/* 배경 위로 살짝 겹치게 -mt-6 줘서 입체감 살림 */}
-      <div className="px-4 py-6 space-y-4 relative z-10 -mt-4">
+      {/* 2. Mission List Section */}
+      {/* z-10으로 낮춰서 펫 영역 밑으로 자연스럽게 깔리게 함 */}
+      {/* -mt-10을 줘서 위쪽 둥근 배경 안으로 살짝 파고들게 연출 */}
+      <div className="px-4 py-6 space-y-4 relative z-10 -mt-10">
         <h3 className="font-bold text-gray-600 text-sm px-1 mb-2">함께하는 특별 미션</h3>
         
-        {/* Friend Invite Card */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
           <div className="flex gap-3 items-center">
             <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-xl">💌</div>
@@ -285,23 +257,16 @@ export default function App() {
     </div>
   );
 
-  // Entry Point to Start the New Feature Demo
   const LegacyRockScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50">
-      {/* This simulates the OLD screen, with a prompt to try the NEW feature */}
       <div className="bg-blue-50 p-6 pb-10 text-center relative overflow-hidden">
          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-100 to-white opacity-50"></div>
-         
          <h1 className="text-2xl font-bold text-gray-900 relative z-10 mb-4">
             톡톡! 포인트가 나오는<br /><span className="text-blue-500">신비한 바위</span>
          </h1>
-
-         {/* The Old Rock */}
          <div className="w-40 h-40 bg-gray-300 rounded-[3rem] mx-auto shadow-lg flex items-center justify-center text-4xl grayscale opacity-50 relative z-10">
             🪨
          </div>
-         
-         {/* Promotion Banner for New Feature */}
          <div className="mt-8 relative z-20">
             <div className="bg-white p-6 rounded-2xl shadow-xl border-2 border-blue-400 animate-pulse">
               <div className="inline-block bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded mb-2">NEW</div>
@@ -316,8 +281,6 @@ export default function App() {
             </div>
          </div>
       </div>
-
-       {/* Fake list below */}
        <div className="p-4 space-y-3 opacity-50 pointer-events-none">
           <div className="h-20 bg-white rounded-xl"></div>
           <div className="h-20 bg-white rounded-xl"></div>
@@ -334,18 +297,13 @@ export default function App() {
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
-
-      {/* Mobile Frame */}
       <div className="w-full max-w-[375px] h-[812px] bg-white shadow-2xl overflow-hidden flex flex-col relative">
         <Header />
-        
-        {/* Content Switcher */}
         {appState === 'main_rock' && <LegacyRockScreen />}
         {appState === 'upload' && <UploadScreen />}
         {appState === 'processing' && <ProcessingScreen />}
         {appState === 'result' && <ResultScreen />}
         {appState === 'main_pet' && <MainPetScreen />}
-
         <BottomNav />
       </div>
     </div>
