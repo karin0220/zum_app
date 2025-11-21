@@ -4,11 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>나만의 펫 리워드</title>
-    <!-- Tailwind CSS CDN (설정 귀찮으니까 CDN으로 땡겨옵시다) -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FIX: Pretendard 폰트 CDN 링크 추가 -->
+    <!-- Pretendard 폰트 CDN -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <!-- ✨ 중요: Tailwind 설정에서 기본 폰트를 Pretendard로 강제 변경 -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Pretendard', 'sans-serif'], // 이제부터 sans라고 쓰면 무조건 프리텐다드임
+            },
+          },
+        },
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
