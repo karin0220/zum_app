@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Check, Coins, ChevronRight, Search, FileText, Menu, Zap } from 'lucide-react';
 
 // --- Mock Data & Assets ---
-// FIX: 제공해주신 6개 펫 이미지로 교체 완료 (모든 펫이 /pet.jpg 파일을 가리킵니다.)
+// FIX: 6개 펫 이미지를 개별 URL로 잘라서 반영 완료!
 const PET_VARIANTS = [
-  { id: 1, name: "주황냥", color: "from-orange-300 to-yellow-200", image: "/pet.jpg" }, // Orange Cat
-  { id: 2, name: "치즈냥", color: "from-amber-200 to-white", image: "/pet.jpg" }, // Cream Cat
-  { id: 3, name: "샴냥이", color: "from-gray-200 to-stone-300", image: "/pet.jpg" }, // Siamese Cat
-  { id: 4, name: "골든댕", color: "from-yellow-300 to-amber-200", image: "/pet.jpg" }, // Yellow Dog
-  { id: 5, name: "푸들", color: "from-amber-600 to-amber-800", image: "/pet.jpg" }, // Brown Poodle
-  { id: 6, name: "시바견", color: "from-orange-200 to-yellow-100", image: "/pet.jpg" }, // Shiba Inu
+  { id: 1, name: "주황냥", color: "from-orange-300 to-yellow-200", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-a626-4a43-9831-758a6a683a6f.webp" }, // Orange Cat
+  { id: 2, name: "치즈냥", color: "from-amber-200 to-white", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-f2f6-4923-a554-080c54bb2004.webp" }, // Cream Cat
+  { id: 3, name: "샴냥이", color: "from-gray-200 to-stone-300", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-1400-47b7-ac75-7b6ec7f8471c.webp" }, // Siamese Cat
+  { id: 4, name: "골든댕", color: "from-yellow-300 to-amber-200", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-97b7-4c4f-9e73-bcf2360b0d36.webp" }, // Yellow Dog
+  { id: 5, name: "푸들", color: "from-amber-600 to-amber-800", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-d006-4b13-b27a-e49ce6b986b2.webp" }, // Brown Poodle
+  { id: 6, name: "시바견", color: "from-orange-200 to-yellow-100", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-c85d-4f01-ba31-e1f32a762963.webp" }, // Shiba Inu
 ];
 
 export default function App() {
@@ -151,7 +151,7 @@ export default function App() {
         <h2 className="text-2xl font-bold text-gray-800 mb-8">짠! 펫이 탄생했어요 🎉</h2>
         <div className={`relative w-64 h-64 bg-gradient-to-br ${generatedPet.color} rounded-3xl shadow-xl flex items-center justify-center p-4 mb-4 animate-[bounce_3s_infinite]`}>
           <div className="absolute inset-0 bg-white opacity-20 rounded-3xl blur-xl"></div>
-          {/* NOTE: 모든 펫이 동일한 /pet.jpg 파일을 사용하므로, 6개 펫 이미지가 다 함께 보일 수 있습니다. */}
+          {/* FIX: 이제 개별 펫 이미지가 사용됩니다. */}
           <img src={generatedPet.image} alt="Pet" className="w-48 h-48 object-contain z-10 drop-shadow-lg" />
           <div className="absolute -bottom-4 bg-white px-4 py-2 rounded-full shadow-md text-gray-800 font-bold text-sm border border-gray-100">
             Lv.1 {generatedPet.name}
@@ -199,7 +199,7 @@ export default function App() {
             className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-30 group"
             onClick={handlePetTap}
           >
-            {/* NOTE: 모든 펫이 동일한 /pet.jpg 파일을 사용하므로, 6개 펫 이미지가 다 함께 보일 수 있습니다. */}
+            {/* FIX: 이제 개별 펫 이미지가 사용됩니다. */}
             <img 
               src={generatedPet.image} 
               alt="My Pet" 
