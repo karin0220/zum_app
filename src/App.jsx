@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Check, Coins, ChevronRight, Search, FileText, Menu, Zap } from 'lucide-react';
 
 // --- Mock Data & Assets ---
-// FIX: 6개 펫 이미지를 개별 URL로 잘라서 반영 완료!
+// FIX: 불안정한 커스텀 URL 대신 안정적인 플레이스홀더 이미지로 교체 완료!
 const PET_VARIANTS = [
-  { id: 1, name: "주황냥", color: "from-orange-300 to-yellow-200", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-a626-4a43-9831-758a6a683a6f.webp" }, // Orange Cat
-  { id: 2, name: "치즈냥", color: "from-amber-200 to-white", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-f2f6-4923-a554-080c54bb2004.webp" }, // Cream Cat
-  { id: 3, name: "샴냥이", color: "from-gray-200 to-stone-300", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-1400-47b7-ac75-7b6ec7f8471c.webp" }, // Siamese Cat
-  { id: 4, name: "골든댕", color: "from-yellow-300 to-amber-200", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-97b7-4c4f-9e73-bcf2360b0d36.webp" }, // Yellow Dog
-  { id: 5, name: "푸들", color: "from-amber-600 to-amber-800", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-d006-4b13-b27a-e49ce6b986b2.webp" }, // Brown Poodle
-  { id: 6, name: "시바견", color: "from-orange-200 to-yellow-100", image: "https://r2.web.moonrover.xyz/gen_images/p0324t001-c85d-4f01-ba31-e1f32a762963.webp" }, // Shiba Inu
+  // placehold.co 포맷: {width}x{height}/{배경색}/{글자색}?text={텍스트}
+  { id: 1, name: "주황냥", color: "from-orange-300 to-yellow-200", image: "https://placehold.co/150x150/ff9900/ffffff/png?text=Orange+Cat" },
+  { id: 2, name: "치즈냥", color: "from-amber-200 to-white", image: "https://placehold.co/150x150/f0e68c/333333/png?text=Cream+Cat" },
+  { id: 3, name: "샴냥이", color: "from-gray-200 to-stone-300", image: "https://placehold.co/150x150/b3a394/333333/png?text=Siamese+Cat" },
+  { id: 4, name: "골든댕", color: "from-yellow-300 to-amber-200", image: "https://placehold.co/150x150/ffd700/333333/png?text=Golden+Dog" },
+  { id: 5, name: "푸들", color: "from-amber-600 to-amber-800", image: "https://placehold.co/150x150/8b4513/ffffff/png?text=Poodle" },
+  { id: 6, name: "시바견", color: "from-orange-200 to-yellow-100", image: "https://placehold.co/150x150/e9a032/333333/png?text=Shiba+Inu" },
 ];
 
 export default function App() {
@@ -25,6 +26,8 @@ export default function App() {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // NOTE: 업로드된 파일을 실제 이미지로 보여주는 대신,
+      // 임시로 이 파일을 선택했다는 표시만 하고 바로 Processing으로 넘어갑니다.
       setSelectedFile(URL.createObjectURL(file));
       setTimeout(() => setAppState('processing'), 500);
     }
@@ -115,6 +118,7 @@ export default function App() {
         <p className="text-sm text-gray-500 mb-6">사진을 올리면 AI가 귀여운 3D 펫으로 변신시켜 드려요!</p>
         <label className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-colors group">
           {selectedFile ? (
+            // NOTE: 실제 업로드된 파일 대신 선택된 파일의 임시 URL을 보여줍니다.
             <img src={selectedFile} alt="Preview" className="w-full h-full object-cover rounded-xl opacity-50" />
           ) : (
             <>
@@ -151,7 +155,7 @@ export default function App() {
         <h2 className="text-2xl font-bold text-gray-800 mb-8">짠! 펫이 탄생했어요 🎉</h2>
         <div className={`relative w-64 h-64 bg-gradient-to-br ${generatedPet.color} rounded-3xl shadow-xl flex items-center justify-center p-4 mb-4 animate-[bounce_3s_infinite]`}>
           <div className="absolute inset-0 bg-white opacity-20 rounded-3xl blur-xl"></div>
-          {/* FIX: 이제 개별 펫 이미지가 사용됩니다. */}
+          {/* FIX: 안정적인 placeholder URL 사용 */}
           <img src={generatedPet.image} alt="Pet" className="w-48 h-48 object-contain z-10 drop-shadow-lg" />
           <div className="absolute -bottom-4 bg-white px-4 py-2 rounded-full shadow-md text-gray-800 font-bold text-sm border border-gray-100">
             Lv.1 {generatedPet.name}
@@ -199,7 +203,7 @@ export default function App() {
             className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-30 group"
             onClick={handlePetTap}
           >
-            {/* FIX: 이제 개별 펫 이미지가 사용됩니다. */}
+            {/* FIX: 안정적인 placeholder URL 사용 */}
             <img 
               src={generatedPet.image} 
               alt="My Pet" 
