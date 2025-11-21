@@ -178,7 +178,6 @@ export default function App() {
   const MainPetScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
       {/* 1. Pet Header Section */}
-      {/* z-20을 줘서 리스트(z-10)보다 무조건 위에 오게 함. pb-24로 여백 더 늘림 */}
       <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-24 rounded-b-[3rem] shadow-sm relative z-20">
         
         <div className="text-center pt-8 pb-4 z-10 relative">
@@ -220,8 +219,6 @@ export default function App() {
       </div>
 
       {/* 2. Mission List Section */}
-      {/* z-10으로 낮춰서 펫 영역 밑으로 자연스럽게 깔리게 함 */}
-      {/* -mt-10을 줘서 위쪽 둥근 배경 안으로 살짝 파고들게 연출 */}
       <div className="px-4 py-6 space-y-4 relative z-10 -mt-10">
         <h3 className="font-bold text-gray-600 text-sm px-1 mb-2">함께하는 특별 미션</h3>
         
@@ -291,6 +288,13 @@ export default function App() {
   return (
     <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center font-sans">
       <style>{`
+        /* Pretendard 폰트 적용을 위해 Tailwind 기본 sans 폰트 스택을 덮어씌움 */
+        @layer base {
+          :root {
+            font-family: 'Pretendard', sans-serif;
+          }
+        }
+
         @keyframes floatUp {
           0% { transform: translateY(0) scale(1); opacity: 1; }
           100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
