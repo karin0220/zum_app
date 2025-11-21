@@ -83,7 +83,7 @@ export default function App() {
 
   // 공통 헤더
   const Header = () => (
-    <header className="flex justify-between items-center px-4 py-3 bg-white sticky top-0 z-10">
+    <header className="flex justify-between items-center px-4 py-3 bg-white sticky top-0 z-50 shadow-sm">
       <div className="flex items-center gap-2">
         <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-white text-xs font-bold">P</div>
         <span className="font-bold text-xl text-gray-800">{points.toLocaleString()}P</span>
@@ -97,7 +97,7 @@ export default function App() {
 
   // 공통 바텀 네비게이션
   const BottomNav = () => (
-    <nav className="flex justify-between items-center px-6 py-3 bg-white border-t border-gray-100 sticky bottom-0 pb-6 text-xs text-gray-400">
+    <nav className="flex justify-between items-center px-6 py-3 bg-white border-t border-gray-100 sticky bottom-0 pb-6 text-xs text-gray-400 z-50">
       <div className="flex flex-col items-center gap-1" onClick={() => setCurrentTab('search')}>
         <Search size={24} />
         <span>검색</span>
@@ -202,10 +202,11 @@ export default function App() {
   const MainPetScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
       {/* Gradient Background Area */}
-      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-20 rounded-b-[3rem] shadow-sm relative overflow-hidden">
+      {/* FIX: pb-8 -> pb-20으로 늘리고, overflow-hidden 제거해서 펫이 짤리지 않게 함 */}
+      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-20 rounded-b-[3rem] shadow-sm relative z-0">
         
         {/* Title */}
-        <div className="text-center pt-6 pb-4 z-10 relative">
+        <div className="text-center pt-8 pb-4 z-10 relative">
           <h1 className="text-2xl font-bold text-gray-900 leading-tight">
             톡톡! 포인트가 쏟아지는<br />
             <span className="text-blue-500">나만의 3D 펫</span>
@@ -216,19 +217,19 @@ export default function App() {
         </div>
 
         {/* Pet Interaction Area */}
-        <div className="flex justify-center items-center py-8 relative">
+        <div className="flex justify-center items-center pt-4 pb-8 relative">
           {/* Glow Effect behind */}
-          <div className={`absolute w-64 h-64 bg-gradient-to-tr ${generatedPet.color} rounded-full blur-3xl opacity-40`}></div>
+          <div className={`absolute w-64 h-64 bg-gradient-to-tr ${generatedPet.color} rounded-full blur-3xl opacity-40 transform translate-y-4`}></div>
           
           {/* The Pet */}
           <div 
-            className="relative w-60 h-60 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-10 group"
+            className="relative w-64 h-64 cursor-pointer transition-transform active:scale-90 active:rotate-3 select-none touch-manipulation z-20 group"
             onClick={handlePetTap}
           >
             <img 
               src={generatedPet.image} 
               alt="My Pet" 
-              className="w-full h-full object-contain drop-shadow-2xl filter group-hover:brightness-110 transition-all" 
+              className="w-full h-full object-contain drop-shadow-2xl filter group-hover:brightness-110 transition-all transform hover:-translate-y-2" 
               style={{ transform: 'translateZ(0)' }} // Force GPU
             />
             
@@ -236,7 +237,7 @@ export default function App() {
             {tapAnimations.map(anim => (
               <div 
                 key={anim.id}
-                className="absolute text-yellow-500 font-bold text-2xl animate-[floatUp_0.8s_ease-out_forwards] pointer-events-none z-20 whitespace-nowrap"
+                className="absolute text-yellow-500 font-bold text-2xl animate-[floatUp_0.8s_ease-out_forwards] pointer-events-none z-30 whitespace-nowrap"
                 style={{ left: anim.x, top: anim.y }}
               >
                 {anim.val}
@@ -247,8 +248,9 @@ export default function App() {
       </div>
 
       {/* Other Missions List (Scrollable) */}
-      <div className="px-4 py-6 space-y-4">
-        <h3 className="font-bold text-gray-600 text-sm px-1">함께하는 특별 미션</h3>
+      {/* 배경 위로 살짝 겹치게 -mt-6 줘서 입체감 살림 */}
+      <div className="px-4 py-6 space-y-4 relative z-10 -mt-4">
+        <h3 className="font-bold text-gray-600 text-sm px-1 mb-2">함께하는 특별 미션</h3>
         
         {/* Friend Invite Card */}
         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
@@ -262,7 +264,7 @@ export default function App() {
           <div className="bg-blue-50 text-blue-500 px-3 py-1 rounded-lg text-sm font-bold">500P</div>
         </div>
 
-        <h3 className="font-bold text-gray-600 text-sm px-1 mt-6">매일 참여 미션</h3>
+        <h3 className="font-bold text-gray-600 text-sm px-1 mt-6 mb-2">매일 참여 미션</h3>
          {[
             { icon: '🖐️', title: '가위바위보 챌린지', sub: '이길수록 커지는 보상', reward: '최대 100P' },
             { icon: '🥠', title: '행운의 포춘쿠키', sub: '하루 3번 열기 가능', reward: '최대 150P' },
