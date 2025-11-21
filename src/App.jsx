@@ -202,7 +202,7 @@ export default function App() {
   const MainPetScreen = () => (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-y-auto scrollbar-hide">
       {/* Gradient Background Area */}
-      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-8 rounded-b-[3rem] shadow-sm relative overflow-hidden">
+      <div className="bg-gradient-to-b from-blue-50 to-gray-50 pb-20 rounded-b-[3rem] shadow-sm relative overflow-hidden">
         
         {/* Title */}
         <div className="text-center pt-6 pb-4 z-10 relative">
